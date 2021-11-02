@@ -78,9 +78,9 @@ main() {
 		local t_nij1="Валидатор в тюрьме:         ${C_LR}да${RES}"
 		local t_nij2="Валидатор в тюрьме:         ${C_LGn}нет${RES}"	
 		local t_del="Делегировано токенов:       ${C_LGn}%.4f${RES} ${token_name}"
-		local t_vp="Весомость голоса:           ${C_LGn}%.4f${RES}"
+		local t_vp="Весомость голоса:           ${C_LGn}%.4f${RES}\n"
 		
-		local t_wa="\nАдрес кошелька:             ${C_LGn}%s${RES}"
+		local t_wa="Адрес кошелька:             ${C_LGn}%s${RES}"
 		local t_bal="Баланс:                     ${C_LGn}%.4f${RES} ${token_name}\n"
 	# Send Pull request with new texts to add a language - https://github.com/SecorD0/Anoma/blob/main/node_info.sh
 	#elif [ "$language" = ".." ]; then
