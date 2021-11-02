@@ -1,11 +1,11 @@
 #!/bin/bash
 # Config
-daemon="`which anoma`"
-token_name="photon"
+daemon=`which anoma`
+token_name="XAN"
 node_dir="$HOME/.anoma/"
-wallet_name="$anome_wallet_name"
-wallet_address="$anome_wallet_address"
-wallet_address_variable="anome_wallet_address"
+moniker="$anoma_moniker"
+wallet_address="$anoma_wallet_address"
+wallet_address_variable="anoma_wallet_address"
 
 # Default variables
 language="EN"
@@ -19,7 +19,7 @@ while test $# -gt 0; do
 	-h|--help)
 		. <(wget -qO- https://raw.githubusercontent.com/SecorD0/utils/main/logo.sh)
 		echo
-		echo -e "${C_LGn}Functionality${RES}: the script shows information about an Anome node"
+		echo -e "${C_LGn}Functionality${RES}: the script shows information about an Anoma node"
 		echo
 		echo -e "Usage: script ${C_LGn}[OPTIONS]${RES}"
 		echo
@@ -32,7 +32,7 @@ while test $# -gt 0; do
 		echo -e "You can use either \"=\" or \" \" as an option and value ${C_LGn}delimiter${RES}"
 		echo
 		echo -e "${C_LGn}Useful URLs${RES}:"
-		echo -e "https://github.com/SecorD0/Anome/blob/main/node_info.sh - script URL"
+		echo -e "https://github.com/SecorD0/Anoma/blob/main/node_info.sh - script URL"
 		echo -e "         (you can send Pull request with new texts to add a language)"
 		echo -e "https://t.me/letskynode — node Community"
 		echo
@@ -59,14 +59,13 @@ printf_n(){ printf "$1\n" "${@:2}"; }
 main() {
 	# Texts
 	if [ "$language" = "RU" ]; then
-		local t_ewa="Для просмотра баланса кошелька необходимо добавить его в систему виде переменной, поэтому ${C_LGn}введите пароль от кошелька${RES}"
 		local t_ewa_err="${C_LR}Не удалось получить адрес кошелька!${RES}"
 		local t_nn="\nНазвание ноды:              ${C_LGn}%s${RES}"
 		local t_id="Keybase ключ:               ${C_LGn}%s${RES}"
 		local t_si="Сайт:                       ${C_LGn}%s${RES}"
-		local t_det="Описание:                   ${C_LGn}%s${RES}\n"
+		local t_det="Описание:                   ${C_LGn}%s${RES}"
 		
-		local t_net="Сеть:                       ${C_LGn}%s${RES}"
+		local t_net="\nСеть:                       ${C_LGn}%s${RES}"
 		local t_ni="ID ноды:                    ${C_LGn}%s${RES}"
 		local t_nv="Версия ноды:                ${C_LGn}%s${RES}"
 		local t_lb="Последний блок:             ${C_LGn}%s${RES}"
@@ -79,14 +78,13 @@ main() {
 		local t_nij1="Валидатор в тюрьме:         ${C_LR}да${RES}"
 		local t_nij2="Валидатор в тюрьме:         ${C_LGn}нет${RES}"	
 		local t_del="Делегировано токенов:       ${C_LGn}%.4f${RES} ${token_name}"
-		local t_vp="Весомость голоса:           ${C_LGn}%.4f${RES}\n"
+		local t_vp="Весомость голоса:           ${C_LGn}%.4f${RES}"
 		
-		local t_wa="Адрес кошелька:             ${C_LGn}%s${RES}"
+		local t_wa="\nАдрес кошелька:             ${C_LGn}%s${RES}"
 		local t_bal="Баланс:                     ${C_LGn}%.4f${RES} ${token_name}\n"
-	# Send Pull request with new texts to add a language - https://github.com/SecorD0/Anome/blob/main/node_info.sh
+	# Send Pull request with new texts to add a language - https://github.com/SecorD0/Anoma/blob/main/node_info.sh
 	#elif [ "$language" = ".." ]; then
 	else
-		local t_ewa="To view the wallet balance, you have to add it to the system as a variable, so ${C_LGn}enter the wallet password${RES}"
 		local t_ewa_err="${C_LR}Failed to get the wallet address!${RES}"
 		local t_nn="\nMoniker:                 ${C_LGn}%s${RES}"
 		local t_id="Keybase key:             ${C_LGn}%s${RES}"
@@ -114,9 +112,8 @@ main() {
 
 	# Actions
 	sudo apt install bc -y &>/dev/null
-	if [ -n "$wallet_name" ] && [ ! -n "$wallet_address" ]; then
-		printf_n "$t_ewa"
-		local wallet_address=`$daemon keys show "$wallet_name" -a`
+	if [ -n "$moniker" ] && [ ! -n "$wallet_address" ]; then
+		local wallet_address=`$daemon wallet address find --alias "$moniker" | grep -oPm1 "(?<=Established: )([^%]+)(?=$)"`
 		if [ -n "$wallet_address" ]; then
 			. <(wget -qO- https://raw.githubusercontent.com/SecorD0/utils/main/miscellaneous/insert_variable.sh) -n "$wallet_address_variable" -v "$wallet_address"
 		else
@@ -143,9 +140,9 @@ main() {
 	#local jailed=`jq -r ".jailed" <<< $node_info`
 	#local delegated=`bc -l <<< "$(jq -r ".tokens" <<< $node_info)/1000000000000000000"`
 	#local voting_power=`bc -l <<< "$(jq -r ".result.validator_info.VotingPower" <<< $status)/1000000000000"`
-	#if [ -n "$wallet_address" ]; then
-	#	local balance=`bc -l <<< "$($daemon query bank balances "$wallet_address" -o json --node "$node_tcp" | jq -r ".balances[0].amount")/1000000000000000000"`
-	#fi
+	if [ -n "$wallet_address" ]; then
+		local balance=`$daemon client balance --token "$token_name" --owner "$moniker" | grep -oPm1 "(?<=^${token_name}: )([^%]+)(?=$)"`
+	fi
 
 	# Output
 	if [ "$raw_output" = "true" ]; then
@@ -185,7 +182,6 @@ main() {
 		else
 			printf_n "$t_sy3"
 		fi
-		printf_n
 		
 		#printf_n "$t_va" "$validator_address"
 		#printf_n "$t_pk" "$validator_pub_key"	
@@ -197,10 +193,10 @@ main() {
 		#printf_n "$t_del" "$delegated"
 		#printf_n "$t_vp" "$voting_power"
 		
-		#if [ -n "$wallet_address" ]; then
-		#	printf_n "$t_wa" "$wallet_address"
-		#	printf_n "$t_bal" "$balance"
-		#fi
+		if [ -n "$wallet_address" ]; then
+			printf_n "$t_wa" "$wallet_address"
+			printf_n "$t_bal" "$balance"
+		fi
 	fi
 }
 
