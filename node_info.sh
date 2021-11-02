@@ -135,11 +135,12 @@ main() {
 	local latest_block_height=`jq -r ".result.sync_info.latest_block_height" <<< $status`
 	local catching_up=`jq -r ".result.sync_info.catching_up" <<< $status`
 
-	#local validator_address=`jq -r ".operator_address" <<< $node_info`
+	local validator_info=`$daemon client voting-power --validator "$moniker"`
+	local validator_address=`grep -oPm1 "(?<=^Validator )([^%]+)(?= is)" <<< "$validator_info"`
 	#local validator_pub_key=`$daemon tendermint show-validator | tr "\"" "'"`
 	#local jailed=`jq -r ".jailed" <<< $node_info`
-	#local delegated=`bc -l <<< "$(jq -r ".tokens" <<< $node_info)/1000000000000000000"`
-	#local voting_power=`bc -l <<< "$(jq -r ".result.validator_info.VotingPower" <<< $status)/1000000000000"`
+	local delegated=`$daemon client bonds --validator "$moniker" | grep -oPm1 "(?<=^Bonds total: )([^%]+)(?=$)"`
+	local voting_power=`grep -oPm1 "(?<=^Total voting power: )([^%]+)(?=$)" <<< "$validator_info"`
 	if [ -n "$wallet_address" ]; then
 		local balance=`$daemon client balance --token "$token_name" --owner "$moniker" | grep -oPm1 "(?<=^${token_name}: )([^%]+)(?=$)"`
 	fi
@@ -183,15 +184,15 @@ main() {
 			printf_n "$t_sy3"
 		fi
 		
-		#printf_n "$t_va" "$validator_address"
+		printf_n "$t_va" "$validator_address"
 		#printf_n "$t_pk" "$validator_pub_key"	
 		#if [ "$jailed" = "true" ]; then
 		#	printf_n "$t_nij1"
 		#else
 		#	printf_n "$t_nij2"
 		#fi
-		#printf_n "$t_del" "$delegated"
-		#printf_n "$t_vp" "$voting_power"
+		printf_n "$t_del" "$delegated"
+		printf_n "$t_vp" "$voting_power"
 		
 		if [ -n "$wallet_address" ]; then
 			printf_n "$t_wa" "$wallet_address"
