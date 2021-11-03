@@ -83,7 +83,7 @@ After=network-online.target
 [Service]
 User=$USER
 ExecStart=`which anoma` --wasm-dir $HOME/wasm/ --base-dir $HOME/.anoma/ ledger
-Restart=on-failure
+Restart=always
 RestartSec=3
 LimitNOFILE=65535
 
