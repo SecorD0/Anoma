@@ -82,6 +82,7 @@ After=network-online.target
 
 [Service]
 User=$USER
+Environment=RUST_BACKTRACE=full
 ExecStart=`which anoma` --wasm-dir $HOME/wasm/ --base-dir $HOME/.anoma/ ledger
 Restart=always
 RestartSec=3
