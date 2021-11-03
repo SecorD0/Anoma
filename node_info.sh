@@ -113,7 +113,7 @@ main() {
 	# Actions
 	sudo apt install bc -y &>/dev/null
 	if [ -n "$moniker" ] && [ ! -n "$wallet_address" ]; then
-		local wallet_address=`$daemon wallet address find --alias "$moniker" | grep -oPm1 "(?<=Established: )([^%]+)(?=$)"`
+		local wallet_address=`$daemon wallet address find --alias "$moniker" | grep -oPm1 "(?<=: )([^%]+)(?=$)"`
 		if [ -n "$wallet_address" ]; then
 			. <(wget -qO- https://raw.githubusercontent.com/SecorD0/utils/main/miscellaneous/insert_variable.sh) -n "$wallet_address_variable" -v "$wallet_address"
 		else
