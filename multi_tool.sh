@@ -93,6 +93,7 @@ WantedBy=multi-user.target" > /etc/systemd/system/anomad.service
 	sudo systemctl enable anomad
 	sudo systemctl restart anomad
 	. <(wget -qO- https://raw.githubusercontent.com/SecorD0/utils/main/miscellaneous/insert_variable.sh) -n anoma_log -v "sudo journalctl -f -n 100 -u anomad" -a
+	. <(wget -qO- https://raw.githubusercontent.com/SecorD0/utils/main/miscellaneous/insert_variable.sh) -n anoma_node_info -v ". <(wget -qO- https://raw.githubusercontent.com/SecorD0/Anoma/main/node_info.sh) -l RU 2> /dev/null" -a
 }
 update() {
 	printf_n "${C_LGn}Coming soon${RES}"
