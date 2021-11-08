@@ -140,7 +140,7 @@ main() {
 	#local validator_pub_key=`$daemon tendermint show-validator | tr "\"" "'"`
 	#local jailed=`jq -r ".jailed" <<< $node_info`
 	local delegated=`$daemon client bonds --validator "$moniker" | grep -oPm1 "(?<=^Bonds total: )([^%]+)(?=$)"`
-	local voting_power=`grep -oPm1 "(?<=^Total voting power: )([^%]+)(?=$)" <<< "$validator_info"`
+	local voting_power=`grep -oPm1 "(?<=active, voting power: )([^%]+)(?=$)" <<< "$validator_info"`
 	if [ -n "$wallet_address" ]; then
 		local balance=`$daemon client balance --token "$token_name" --owner "$moniker" | grep -oPm1 "(?<=^${token_name}: )([^%]+)(?=$)"`
 	fi
